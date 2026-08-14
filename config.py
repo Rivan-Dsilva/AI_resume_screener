@@ -12,6 +12,6 @@ MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB
 # MySQL
 MYSQL_HOST = "localhost"
 MYSQL_USER = "root"
-MYSQL_PASSWORD = "Rivan@21"           # <-- set your MySQL password
+MYSQL_PASSWORD = "***********"           # <-- set your MySQL password
 MYSQL_DB = "resume_screening"
 MYSQL_PORT = 3306
