@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="container py-4">
+  <div class="text-center mb-5 fade-up">
+    <h2 class="section-title">Features</h2>
+    <p class="subtle">Everything you need to evaluate and improve a resume — fully offline.</p>
+  </div>
+  <div class="row g-4">
+    {% set items = [
+      ('fa-file-lines','Resume Parsing','Extract name, email, phone, education, experience, skills, projects & more.'),
+      ('fa-gauge-high','Resume Score','Overall 0–100 score from skills, experience, projects, education & ATS.'),
+      ('fa-list-check','ATS Score','Rule-based ATS compatibility check covering length, formatting, keywords.'),
+      ('fa-puzzle-piece','Skill Match','Compare your skills with the JD and highlight matched vs missing skills.'),
+      ('fa-lightbulb','Career Recommendation','Suggestions powered by the CVC dataset stored in MySQL.'),
+      ('fa-circle-exclamation','Skill Gap Analysis','See what is missing and what to learn next.'),
+      ('fa-chart-column','Dashboard','Beautiful Chart.js dashboard with radar, pie, bar & line charts.'),
+      ('fa-file-pdf','PDF Report','Download a professional analysis report instantly.'),
+    ] %}
+    {% for icon, title, desc in items %}
+    <div class="col-md-6 col-lg-3 fade-up">
+      <div class="glass feature-card">
+        <div class="feature-icon"><i class="fa-solid {{icon}}"></i></div>
+        <h6 class="fw-bold">{{title}}</h6>
+        <p class="subtle small mb-0">{{desc}}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

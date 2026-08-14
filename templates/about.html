@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="container py-4">
+  <div class="glass p-4 p-md-5 fade-up">
+    <h2 class="section-title">About the Project</h2>
+    <p>
+      The <b>AI Resume Screening &amp; Analysis System</b> is a project
+      that helps students and job seekers evaluate their resumes against a job description
+      using <b>machine learning</b> and <b>NLP</b> — without relying on any external AI APIs.
+    </p>
+    <h5 class="mt-4 fw-bold">Technology Used</h5>
+    <ul>
+      <li>Frontend: HTML5, CSS3, Bootstrap 5, JavaScript, Chart.js, Font Awesome, Google Fonts (Poppins)</li>
+      <li>Backend: Python Flask</li>
+      <li>Database: MySQL (database <code>resume_screening</code>, table <code>resume_data</code>)</li>
+      <li>ML/NLP: scikit-learn (TF-IDF + Cosine Similarity), spaCy, NLTK</li>
+      <li>Resume parsing: pdfplumber, python-docx</li>
+      <li>PDF Report: reportlab</li>
+    </ul>
+    <h5 class="mt-4 fw-bold">Developed By</h5>
+    <p class="mb-0">Rivan Dsilva · <a href="#">GitHub</a> · <a href="#">LinkedIn</a></p>
+  </div>
+</section>
+{% endblock %}

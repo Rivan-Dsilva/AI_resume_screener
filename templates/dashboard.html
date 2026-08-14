@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% block content %}
+{% set p = r.parsed %}
+{% set s = r.score %}
+<section class="container py-4">
+
+  <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 fade-up">
+    <div>
+      <h2 class="section-title mb-1">Analysis Dashboard</h2>
+      <div class="subtle"><i class="fa-solid fa-file"></i> {{ filename }}</div>
+    </div>
+    <a href="{{ url_for('report_pdf') }}" class="btn btn-gradient mt-2 mt-md-0">
+      <i class="fa-solid fa-file-pdf me-2"></i>Download PDF Report
+    </a>
+  </div>
+
+  <!-- KPI rings -->
+  <div class="row g-4 fade-up d1">
+    {% set kpis = [
+      ('Resume Score', s.overall, '#2563EB'),
+      ('ATS Score', s.ats.score, '#1D4ED8'),
+      ('Job Match', r.job_match_percent, '#38BDF8'),
+      ('Skill Match', s.skill_match.percent, '#0EA5E9'),
+      ('Completeness', r.completeness, '#22C55E'),
+    ] %}
+    {% for label, val, color in kpis %}
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="glass p-3">
+        <div class="score-ring" style="--val:{{val}}; --color:{{color}}"><div>{{val}}%</div></div>
+        <div class="kpi-label">{{label}}</div>
+      </div>
+    </div>
+    {% endfor %}
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="glass p-3 text-center h-100 d-flex flex-column justify-content-center">
+        <div class="display-6 fw-bold text-primary">{{ p.technical_skills|length }}</div>
+        <div class="subtle">Technical Skills</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile -->
+  <div class="row g-4 mt-1 fade-up d2">
+    <div class="col-lg-6">
+      <div class="glass p-4 h-100">
+        <h5 class="section-title"><i class="fa-solid fa-id-card me-2"></i>Candidate Profile</h5>
+        <div class="row g-2">
+          <div class="col-sm-6"><b>Name:</b> {{ p.name }}</div>
+          <div class="col-sm-6"><b>Email:</b> {{ p.email }}</div>
+          <div class="col-sm-6"><b>Phone:</b> {{ p.phone or '-'}}</div>
+          <div class="col-sm-6"><b>LinkedIn:</b> {{ p.linkedin or '—' }}</div>
+          <div class="col-sm-6"><b>GitHub:</b> {{ p.github or '—' }}</div>
+          <div class="col-sm-6"><b>Languages:</b> {{ p.languages|join(', ') or '—' }}</div>
+        </div>
+        <hr>
+        <h6 class="fw-bold">Education</h6>
+        <div>Degrees: {{ p.education.degrees|join(', ') or '—' }}</div>
+        <div>Universities: {{ p.education.universities|join(', ') or '—' }}</div>
+        <div>Graduation Year: {{ p.education.graduation_year or '—' }}</div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="glass p-4 h-100">
+        <h5 class="section-title"><i class="fa-solid fa-chart-radar me-2"></i>Score Breakdown</h5>
+        <canvas id="barChart" height="170"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skills -->
+  <div class="row g-4 mt-1 fade-up">
+    <div class="col-lg-6">
+      <div class="glass p-4 h-100">
+        <h5 class="section-title"><i class="fa-solid fa-code me-2"></i>Technical Skills</h5>
+        <div>{% for sk in p.technical_skills %}<span class="badge-soft">{{sk}}</span>{% else %}<span class="subtle">No skills detected.</span>{% endfor %}</div>
+        <h6 class="fw-bold mt-3">Soft Skills</h6>
+        <div>{% for sk in p.soft_skills %}<span class="badge-soft">{{sk}}</span>{% else %}<span class="subtle">—</span>{% endfor %}</div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="glass p-4 h-100">
+        <h5 class="section-title"><i class="fa-solid fa-bullseye me-2"></i>Skill Match vs JD</h5>
+        <canvas id="pieChart" height="170"></canvas>
+        <div class="row mt-3">
+          <div class="col-6">
+            <h6 class="fw-bold text-success">Matched</h6>
+            {% for x in s.skill_match.matched %}<span class="badge-soft badge-green">{{x}}</span>{% else %}<span class="subtle">—</span>{% endfor %}
+          </div>
+          <div class="col-6">
+            <h6 class="fw-bold text-danger">Missing</h6>
+            {% for x in s.skill_match.missing %}<span class="badge-soft badge-red">{{x}}</span>{% else %}<span class="subtle">—</span>{% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Experience / Projects / Certifications -->
+  <div class="row g-4 mt-1 fade-up">
+    <div class="col-lg-4">
+      <div class="glass p-4 h-100" , class="gla" >
+        <h5 class="section-title"><i class="fa-solid fa-briefcase me-2"></i>Experience</h5>
+        <p class="mb-1"><b>Years:</b> {{ p.experience_years }}</p>
+        <p class="mb-2"><b>Companies:</b></p>
+        {% for c in p.companies %}<span class="badge-soft">{{c}}</span>{% else %}<span class="subtle">—</span>{% endfor %}
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="glass p-4 h-100", class="gla">
+        <h5 class="section-title"><i class="fa-solid fa-diagram-project me-2"></i>Projects</h5>
+        <p class="mb-2"><b>Count:</b> {{ p.projects|length }}</p>
+        <ul class="mb-0 ps-3">
+          {% for pr in p.projects %}<li>{{pr}}</li>{% else %}<li class="subtle">No projects detected.</li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="glass p-4 h-100", class="gla">
+        <h5 class="section-title"><i class="fa-solid fa-certificate me-2"></i>Certifications</h5>
+        {% for c in p.certifications %}<div class="badge-soft d-block mb-1">{{c}}</div>{% else %}<span class="subtle">No certifications detected.</span>{% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Strengths / Weaknesses / Suggestions -->
+  <div class="row g-4 mt-1 fade-up">
+    <div class="col-lg-4">
+      <div class="glass p-4 h-100", class="gla">
+        <h5 class="section-title text-success"><i class="fa-solid fa-thumbs-up me-2"></i>Strengths</h5>
+        <ul class="ps-3 mb-0">{% for x in r.strengths %}<li>{{x}}</li>{% else %}<li class="subtle">—</li>{% endfor %}</ul>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="glass p-4 h-100", class="gla">
+        <h5 class="section-title text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Weaknesses</h5>
+        <ul class="ps-3 mb-0">{% for x in r.weaknesses %}<li>{{x}}</li>{% else %}<li class="subtle">—</li>{% endfor %}</ul>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="glass p-4 h-100", class="gla">
+        <h5 class="section-title" style="color:#92400E"><i class="fa-solid fa-lightbulb me-2"></i>Suggestions</h5>
+        <ul class="ps-3 mb-0">{% for x in r.suggestions %}<li>{{x}}</li>{% else %}<li class="subtle">—</li>{% endfor %}</ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts row 2 + Career Recommendations -->
+  <div class="row g-4 mt-1 fade-up">
+    <div class="col-lg-7">
+      <div class="glass p-4 h-100">
+        <h5 class="section-title"><i class="fa-solid fa-chart-line me-2"></i>Resume Analysis Trend</h5>
+        <canvas id="lineChart" height="160"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="glass p-4 h-100", class="gla">
+        <h5 class="section-title"><i class="fa-solid fa-rocket me-2"></i>Career Recommendations</h5>
+        <div class="row g-2">
+          {% for c in r.careers %}
+          <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between p-2 rounded" style="background:rgba(37,99,235,.06)">
+              <div><i class="fa-solid fa-briefcase me-2 text-primary"></i><b>{{ c.job_position }}</b></div>
+              <span class="badge-soft">{{ c.score }}%</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Radar -->
+  <div class="row g-4 mt-1 mb-4 fade-up">
+    <div class="col-lg-6">
+      <div class="glass p-4 h-100">
+        <h5 class="section-title"><i class="fa-solid fa-radar me-2"></i>Skill Radar</h5>
+        <canvas id="radarChart" height="220"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="glass p-4 h-100">
+        <h5 class="section-title"><i class="fa-solid fa-list-check me-2"></i>ATS Checks</h5>
+        <div class="row">
+          {% for k, v in s.ats.checks.items() %}
+          <div class="col-md-6 mb-2">
+            {% if v %}<i class="fa-solid fa-circle-check text-success me-2"></i>
+            {% else %}<i class="fa-solid fa-circle-xmark text-danger me-2"></i>{% endif %}
+            {{ k.replace('_',' ').title() }}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+{% set s = r.score %}
+{% set p = r.parsed %}
+<script>
+const breakdown = {{ r.score.breakdown|tojson }};
+const matched = {{ r.score.skill_match.matched|length }};
+const missing = {{ r.score.skill_match.missing|length }};
+
+new Chart(document.getElementById('barChart'), {
+  type:'bar',
+  data:{
+    labels:Object.keys(breakdown),
+    datasets:[{label:'Score', data:Object.values(breakdown),
+      backgroundColor:['#2563EB','#1D4ED8','#38BDF8','#0EA5E9','#60A5FA','#93C5FD'],
+      borderRadius:8}]
+  },
+  options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,max:100}}}
+});
+
+new Chart(document.getElementById('pieChart'), {
+  type:'doughnut',
+  data:{labels:['Matched','Missing'], datasets:[{data:[matched,missing],
+    backgroundColor:['#22C55E','#EF4444']}]},
+  options:{plugins:{legend:{position:'bottom'}}}
+});
+
+new Chart(document.getElementById('lineChart'), {
+  type:'line',
+  data:{
+    labels:['Skills','Experience','Projects','Education','Certifications','ATS','Overall'],
+    datasets:[{label:'Score',
+      data:[
+        {{ s.breakdown['Skills (40%)'] }},
+        {{ s.breakdown['Experience (20%)'] }},
+        {{ s.breakdown['Projects (15%)'] }},
+        {{ s.breakdown['Education (10%)'] }},
+        {{ s.breakdown['Certifications (5%)'] }},
+        {{ s.breakdown['ATS (10%)'] }},
+        {{ s.overall }}
+      ],
+      borderColor:'#2563EB',backgroundColor:'rgba(37,99,235,.15)',tension:.35, fill:true, pointRadius:5}]
+  },
+  options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,max:100}}}
+});
+
+new Chart(document.getElementById('radarChart'), {
+  type:'radar',
+  data:{
+    labels:Object.keys(breakdown),
+    datasets:[{label:'You', data:Object.values(breakdown),
+      backgroundColor:'rgba(37,99,235,.25)', borderColor:'#2563EB', pointBackgroundColor:'#2563EB'}]
+  },
+  options:{scales:{r:{beginAtZero:true, max:100}}}
+});
+</script>
+{% endblock %}

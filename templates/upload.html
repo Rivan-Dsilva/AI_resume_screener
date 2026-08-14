@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="container py-4">
+  <div class="text-center mb-4 fade-up">
+    <h2 class="section-title">Upload Your Resume</h2>
+    <p class="subtle">PDF or DOCX · Max 10 MB</p>
+  </div>
+
+  <form id="upload-form" class="glass p-4 p-md-5 fade-up d1" method="POST" enctype="multipart/form-data">
+    <div id="dropzone" class="dropzone mb-4">
+      <i class="fa-solid fa-cloud-arrow-up mb-2"></i>
+      <h5 class="mb-1">Drag &amp; drop your resume here</h5>
+      <p class="subtle mb-2">or click to browse</p>
+      <input type="file" id="resume" name="resume" accept=".pdf,.docx" hidden required>
+      <div id="file-name" class="mt-2">No file selected</div>
+    </div>
+
+    <label class="form-label fw-semibold"><i class="fa-solid fa-briefcase me-1 text-primary"></i> Job Description</label>
+    <textarea name="job_description" class="form-control" rows="8" placeholder="Paste Job Description Here..."></textarea>
+
+    <div class="text-center mt-4">
+      <button class="btn btn-gradient btn-lg" type="submit">
+        <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Analyze Resume
+      </button>
+    </div>
+  </form>
+</section>
+{% endblock %}
